@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelNotes+ List</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>My Travel Notes</h1>
+
+        <div class="description-box">
+            <h3>📘 About This Page</h3>
+            <p>This page shows all your travel notes saved in MongoDB, along with extra information pulled from the RestCountries API.</p>
+        </div>
+
+        <div id="notes">
+            <!-- Notes will be injected here -->
+        </div>
+
+        <p><a href="addNote.html">Add New Note</a></p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('saved') === '1') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = 'Your note was saved successfully!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        fetch('/notes')
+            .then(r => r.json())
+            .then(notes => {
+                const container = document.getElementById('notes');
+                
+                if (notes.length === 0) {
+                    container.innerHTML = '<p>No notes found.</p>';
+                    return;
+                }
+
+                notes.forEach(note => {
+                    const d = document.createElement('div');
+                    d.className = 'noteCard';
+                    
+                    const dateStr = note.date ? new Date(note.date).toLocaleDateString() : 'No date';
+                    
+                    let apiHtml = '';
+                    if (note.apiInfo && note.apiInfo.country) {
+                        apiHtml = `
+                            <div class="api-info">
+                                <div><strong>Region:</strong> ${note.apiInfo.region || 'Unknown'}</div>
+                                <div><strong>Population:</strong> ${note.apiInfo.population ? note.apiInfo.population.toLocaleString() : 'N/A'}</div>
+                                <div><strong>Languages:</strong> ${note.apiInfo.languages ? note.apiInfo.languages.join(', ') : 'N/A'}</div>
+                            </div>
+                        `;
+                    }
+
+                    const tagsHtml = note.tags && note.tags.length > 0 
+                        ? `<div class="tags-container">Tags: ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` 
+                        : '';
+
+                    const flagHtml = note.apiInfo && note.apiInfo.flagUrl 
+                        ? `<img src="${note.apiInfo.flagUrl}" alt="Flag" class="flag">` 
+                        : '';
+
+                    d.innerHTML = `
+                        <div class="note-header">
+                            <div>
+                                <h2>${note.location}</h2>
+                                <div class="note-date">${dateStr}</div>
+                            </div>
+                            ${flagHtml}
+                        </div>
+                        <div>${note.memory}</div>
+                        ${apiHtml}
+                        ${tagsHtml}
+                    `;
+                    container.appendChild(d);
+                });
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+</html>

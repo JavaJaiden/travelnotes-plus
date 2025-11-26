@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelNotes+</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TravelNotes+</h1>
+
+        <div class="description-box">
+            <h3>💡 What this page does</h3>
+            <p>This form lets you record a travel memory. When you submit, we automatically fetch country information (flag, region, languages) so your notes feel richer.</p>
+        </div>
+
+        <form action="/notes" method="POST">
+            <div class="form-group">
+                <label for="location">Location (City, Country)</label>
+                <input type="text" id="location" name="location" placeholder="e.g. Paris, France" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Trip Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="memory">Write about your memory</label>
+                <textarea id="memory" name="memory" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (comma separated)</label>
+                <input type="text" id="tags" name="tags">
+            </div>
+
+            <button type="submit">Save Note</button>
+        </form>
+
+        <p><a href="listNotes.html">View All Notes</a></p>
+    </div>
+</body>
+</html>
